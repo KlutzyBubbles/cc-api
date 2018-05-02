@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
 
   File: oauth.php
   Date: 26/04/2017
@@ -57,6 +57,10 @@
   4 - Overridden
 
  */
+
+use \Psr\Http\Message\ServerRequestInterface as Request;
+use \Psr\Http\Message\ResponseInterface as Response;
+
 if (PHP_SAPI == 'cli-server') {
 	// To help the built-in PHP dev server, check if the request was actually for
 	// something which should probably be served as a static file
@@ -116,3 +120,4 @@ $app->post('/validate', function(Request $request, Response $response) {
 
 // Run app
 $app->run();
+

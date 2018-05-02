@@ -106,6 +106,24 @@ class DBConnection {
 		$q .= ' WHERE ' . $where;
 		return $this->query($q);
 	}
+	
+	public function search($table, $column, $term, $case_sen = false) {
+		if (!isset($table) || !isset($column) || !isset($term))
+			return false;
+		$q = 'SELECT * FROM ' . $table . ' WHERE ';
+		if ($case_sen)
+			$q .= 'LOWER(';
+		$q .= $column;
+		if ($case_sen)
+			$q .= ')';
+		$q .= '=';
+		if ($case_sen)
+			$q .= ' LOWER(';
+		$q .= $this->quote($term);
+		if ($case_sen)
+			$q .= ')';
+		return $this->query($q);
+	}
 
 	public function hasRows() {
 		return $this->rowCount() > 0;
@@ -220,5 +238,3 @@ class DBError {
 	}
 
 }
-
-?>

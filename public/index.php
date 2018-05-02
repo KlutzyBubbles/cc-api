@@ -212,6 +212,37 @@ $app->post('/user/password_reset', function(Request $request, Response $response
 	$response->getBody()->write(json_encode($output));
 });
 
+$app->post('/tours/search', function(Request $request, Response $response) {
+	global $output;
+	$body = $request->getParsedBody();
+	if (isset($body['column']) && isset($body['term'])) {
+		$con = new DBConnection();
+		if ($con->hasError()) {
+			$output['error'] = $con->getError()->getArray();
+			$output['code'] = 0;
+		} else {
+			$data = [];
+			$o = $con->search('tours', $body['column'], $body['term']);
+			if ($con->hasError()) {
+				$output['db_error'] = $con->getError()->getArray();
+				$output['code'] = 0;
+			} else if ($con->hasRows($o)) {
+				$output['valid'] = true;
+				$output['rows'] = $con->rowCount($o);
+				$output['data'] = $con->fetchAll($o);
+			} else {
+				$output['valid'] = true;
+				$output['rows'] = 0;
+				$output['data'] = [];
+			}
+		}
+	} else {
+		$output['error'] = 'Invalid arguments provided, please see documentation';
+		$output['code'] = 3;
+	}
+	$response->getBody()->write(json_encode($output));
+});
+
 /**
 
 

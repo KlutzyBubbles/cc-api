@@ -1,6 +1,6 @@
 <?php
 
-require_once '../database/db_connection.php';
+require_once 'database/db_connection.php';
 
 class User {
 	
@@ -153,5 +153,3 @@ class User {
 	}
 	
 }
-
-?>
