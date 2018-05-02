@@ -94,6 +94,19 @@ class DBConnection {
 		return $this->query($q);
 	}
 
+	public function update($table, $data, $where) {
+		if (!isset($table) || !isset($data) || !isset($where) || !is_array($data) || $data == array() || array_keys($data) === range(0, count($data) - 1))
+			return false;
+		$q = 'UPDATE ' . $table . ' SET ';
+		$prefix = '';
+		foreach ($data as $key => $val) {
+			$q .= $prefix . $key . '=' . $this->quote($val);
+			$prefix = ', ';
+		}
+		$q .= ' WHERE ' . $where;
+		return $this->query($q);
+	}
+
 	public function hasRows() {
 		return $this->rowCount() > 0;
 	}

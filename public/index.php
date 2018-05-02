@@ -31,6 +31,15 @@ require __DIR__ . '/../src/routes.php';
 
 require_once 'database/db_connection.php';
 require_once 'global_config.php';
+require_once 'oauth/oauth_functions.php';
+
+/*
+ * Error Codes:
+ * 0 - Database error
+ * 1 - Body variable format error
+ * 2 - Token error
+ * 3 - Invalid arguments
+ */
 
 $app->post('/register', function(Request $request, Response $response) {
 	$body = $request->getParsedBody();
@@ -84,19 +93,25 @@ $app->post('/register', function(Request $request, Response $response) {
 						$output['db_error'] = $con->getError()->getArray();
 						$output['code'] = 0;
 					} else {
-						$c = curl_init();
-						curl_setopt_array($c, array(
-							CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
-							CURLOPT_URL => CLOUD_URL . 'oauth.php/request',
-							CURLOPT_POST => true,
-							CURLOPT_POSTFIELDS => json_encode(array(
-								"user" => $body['email'],
-								"password" => $body['password']
-							))
-						));
-						$o = curl_exec($c);
-						curl_close($c);
-						if (!$output['valid']) {
+						/*
+						  $c = curl_init();
+						  curl_setopt_array($c, array(
+						  CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
+						  CURLOPT_URL => CLOUD_URL . 'oauth.php/request',
+						  CURLOPT_POST => true,
+						  CURLOPT_POSTFIELDS => json_encode(array(
+						  "user" => $body['email'],
+						  "password" => $body['password']
+						  ))
+						  ));
+						  $o = curl_exec($c);
+						  curl_close($c);
+
+						 */
+						$o = [];
+						$o['valid'] = false;
+						request($o, $body['email'], $body['password']);
+						if (!$o['valid']) {
 							$output['error'] = 'The token could not be retrieved';
 							$output['token']['error'] = $o['error'];
 							$output['token']['code'] = $o['code'];
@@ -111,6 +126,85 @@ $app->post('/register', function(Request $request, Response $response) {
 			}
 		}
 		$con->close();
+	} else {
+		$output['error'] = 'Invalid arguments provided, please see documentation';
+		$output['code'] = 3;
+	}
+	$response->getBody()->write(json_encode($output));
+});
+
+
+$app->post('/user/update', function(Request $request, Response $response) {
+	global $output;
+	$body = $request->getParsedBody();
+	if (isset($body['user']) && isset($body['token'])) {
+		$o = [];
+		$o['valid'] = false;
+		validate($o, $body['user'], $body['token']);
+		if (!$o['valid']) {
+			$output['error'] = 'The token could not be validated';
+			$output['token']['error'] = $o['error'];
+			$output['token']['code'] = $o['code'];
+			$output['code'] = 2;
+		} else {
+			$con = new DBConnection();
+			if ($con->hasError()) {
+				$output['error'] = $con->getError()->getArray();
+				$output['code'] = 0;
+			} else {
+				$data = [];
+				foreach ($body as $key => $val) {
+					if (strtolower($key) == 'user' || strtolower($key) == 'token' || strtolower($key) == 'password')
+						continue;
+					$data[$key] = $val;
+				}
+				$where = 'email=' . $con->quote($body['user']);
+				$con->update('users', $data, $where);
+				if ($con->hasError()) {
+					$output['db_error'] = $con->getError()->getArray();
+					$output['code'] = 0;
+				} else {
+					$output['valid'] = true;
+				}
+			}
+		}
+	} else {
+		$output['error'] = 'Invalid arguments provided, please see documentation';
+		$output['code'] = 3;
+	}
+	$response->getBody()->write(json_encode($output));
+});
+
+$app->post('/user/password_reset', function(Request $request, Response $response) {
+	global $output;
+	$body = $request->getParsedBody();
+	if (isset($body['user']) && isset($body['token']) && isset($body['password'])) {
+		$o = [];
+		$o['valid'] = false;
+		validate($o, $body['user'], $body['token']);
+		if (!$o['valid']) {
+			$output['error'] = 'The token could not be validated';
+			$output['token']['error'] = $o['error'];
+			$output['token']['code'] = $o['code'];
+			$output['code'] = 2;
+		} else {
+			$con = new DBConnection();
+			if ($con->hasError()) {
+				$output['error'] = $con->getError()->getArray();
+				$output['code'] = 0;
+			} else {
+				$data = [];
+				$data['password'] = password_hash($body['password']);
+				$where = 'email=' . $con->quote($body['user']);
+				$con->update('users', $data, $where);
+				if ($con->hasError()) {
+					$output['db_error'] = $con->getError()->getArray();
+					$output['code'] = 0;
+				} else {
+					$output['valid'] = true;
+				}
+			}
+		}
 	} else {
 		$output['error'] = 'Invalid arguments provided, please see documentation';
 		$output['code'] = 3;
