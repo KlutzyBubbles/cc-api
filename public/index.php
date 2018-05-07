@@ -215,25 +215,35 @@ $app->post('/user/password_reset', function(Request $request, Response $response
 $app->post('/tours/search', function(Request $request, Response $response) {
 	global $output;
 	$body = $request->getParsedBody();
-	if (isset($body['column']) && isset($body['term'])) {
-		$con = new DBConnection();
-		if ($con->hasError()) {
-			$output['error'] = $con->getError()->getArray();
-			$output['code'] = 0;
+	if (isset($body['user']) && isset($body['token']) && isset($body['column']) && isset($body['term'])) {
+		$o = [];
+		$o['valid'] = false;
+		validate($o, $body['user'], $body['token']);
+		if (!$o['valid']) {
+			$output['error'] = 'The token could not be validated';
+			$output['token']['error'] = $o['error'];
+			$output['token']['code'] = $o['code'];
+			$output['code'] = 2;
 		} else {
-			$data = [];
-			$o = $con->search('tours', $body['column'], $body['term']);
+			$con = new DBConnection();
 			if ($con->hasError()) {
-				$output['db_error'] = $con->getError()->getArray();
+				$output['error'] = $con->getError()->getArray();
 				$output['code'] = 0;
-			} else if ($con->hasRows($o)) {
-				$output['valid'] = true;
-				$output['rows'] = $con->rowCount($o);
-				$output['data'] = $con->fetchAll($o);
 			} else {
-				$output['valid'] = true;
-				$output['rows'] = 0;
-				$output['data'] = [];
+				$data = [];
+				$o = $con->search('tours', $body['column'], $body['term']);
+				if ($con->hasError()) {
+					$output['db_error'] = $con->getError()->getArray();
+					$output['code'] = 0;
+				} else if ($con->hasRows($o)) {
+					$output['valid'] = true;
+					$output['rows'] = $con->rowCount($o);
+					$output['data'] = $con->fetchAll($o);
+				} else {
+					$output['valid'] = true;
+					$output['rows'] = 0;
+					$output['data'] = [];
+				}
 			}
 		}
 	} else {
