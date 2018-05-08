@@ -93,21 +93,6 @@ $app->post('/register', function(Request $request, Response $response) {
 						$output['db_error'] = $con->getError()->getArray();
 						$output['code'] = 0;
 					} else {
-						/*
-						  $c = curl_init();
-						  curl_setopt_array($c, array(
-						  CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
-						  CURLOPT_URL => CLOUD_URL . 'oauth.php/request',
-						  CURLOPT_POST => true,
-						  CURLOPT_POSTFIELDS => json_encode(array(
-						  "user" => $body['email'],
-						  "password" => $body['password']
-						  ))
-						  ));
-						  $o = curl_exec($c);
-						  curl_close($c);
-
-						 */
 						$o = [];
 						$o['valid'] = false;
 						request($o, $body['email'], $body['password']);
