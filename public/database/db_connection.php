@@ -107,21 +107,28 @@ class DBConnection {
 		return $this->query($q);
 	}
 	
-	public function search($table, $column, $term, $case_sen = false) {
+	public function search($table, $column, $term) {
 		if (!isset($table) || !isset($column) || !isset($term))
 			return false;
 		$q = 'SELECT * FROM ' . $table . ' WHERE ';
-		if ($case_sen)
-			$q .= 'LOWER(';
 		$q .= $column;
-		if ($case_sen)
-			$q .= ')';
-		$q .= '=';
-		if ($case_sen)
-			$q .= ' LOWER(';
-		$q .= $this->quote($term);
-		if ($case_sen)
-			$q .= ')';
+		$q .= ' LIKE ';
+		$q .= $this->quote('%' . $term . '%');
+		return $this->query($q);
+	}
+	
+	public function searchArr($table, $terms) {
+		if (!isset($table) || !isset($terms) || !is_array($terms))
+			return false;
+		$q = 'SELECT * FROM ' . $table . ' WHERE ';
+		$prefix = '';
+		foreach ($terms as $key => $val) {
+			$q .= $prefix;
+			$q .= $key;
+			$q .= ' LIKE ';
+			$q .= $this->quote('%' . $val . '%');
+			$prefix = ' AND ';
+		}
 		return $this->query($q);
 	}
 
@@ -163,7 +170,18 @@ class DBConnection {
 		}
 		return true;
 	}
-
+	/**
+	public function restartPointer() {
+		$this->pointer = -1;
+		if ($this->set === null)
+			return false;
+		if ($this->rowCount() === 0) {
+			$this->set = null;
+			return false;
+		}
+		return true;
+	}
+*/
 	public function fetchAll() {
 		if ($this->set === null)
 			return false;
@@ -199,7 +217,7 @@ class DBConnection {
 	public function quote($s) {
 		if ($this->hasError(true))
 			return null;
-		if (!is_string($s))
+		if (!is_string($s) && is_array($s))
 			throw new Exception(implode($s->getArray()));
 		return $this->link->quote($s);
 	}

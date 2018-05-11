@@ -7,6 +7,27 @@
  */
 
 require_once 'oauth/user.php';
+require_once 'random_compat/lib/random.php';
+
+function getID($email, $token) {
+	$o = [];
+	validate($o, $email, $token);
+	if (!$o['valid'])
+		return false;
+	$con = new DBConnection();
+	if ($con->hasError()) {
+		return false;
+	} else {
+		$con->query("SELECT id FROM users WHERE email=" . $con->quote(strtolower($email)));
+		if ($con->hasError()) {
+			return false;
+		} else if ($con->rowCount() !== 1) {
+			return false;
+		} else {
+			return $con->fetchCurrent()['id'];
+		}
+	}
+}
 
 function revoke(&$output, $user, $token) {
 	if (isset($user) && isset($token)) {
@@ -138,10 +159,12 @@ function request(&$output, $user, $password) {
 									$output['code'] = 0;
 								}
 							}
-							$con->query('INSERT INTO tokens VALUES (' . $con->quote($u['id']) . ', NOW(3), 1, ' . $con->quote($_SERVER['REMOTE_ADDR']) . ', ' . $con->quote(bin2hex(random_bytes(32))) . ', 864000000)');
+							$q = "INSERT INTO tokens (`user`, `requested`, `cstate`, `created_by`, `token`, `expires`) VALUES (" . $u['id'] . ', NOW(3), 1, ' . $con->quote($_SERVER['REMOTE_ADDR']) . ', ' . $con->quote(bin2hex(random_bytes(32))) . ', 864000000)';
+							$con->query($q);
 							if ($con->hasError()) {
 								$output['db_error'] = $con->getError()->getArray();
 								$output['error'] = 'There was an issue executing the INSERT query';
+								$output['query'] = $q;
 								$output['code'] = 0;
 							} else {
 								$con->query('SELECT token, requested FROM tokens WHERE cstate=1 AND user=' . $con->quote($u['id']));
@@ -193,12 +216,12 @@ function validate(&$output, $user, $token) {
 					$output['error'] = 'The request returned no values';
 					$output['code'] = 4;
 				} else {
-					if ($u->tokenMatch($token)) {
-						$output['valid'] = true;
-					} else if ($u->hasExpired()) {
+					if ($u->hasExpired()) {
 						$output['error'] = 'The token has expired';
 						$output['code'] = 6;
 						$output['cstate'] = 0;
+					} else if ($u->tokenMatch($token)) {
+						$output['valid'] = true;
 					} else {
 						$output['error'] = 'The request could not be validated';
 						$output['code'] = 5;

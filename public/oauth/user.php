@@ -47,7 +47,7 @@ class User {
 			$requested = new DateTime(date("Y-m-d H:i:s", strtotime($this->requested)));
 			$now = new DateTime();
 			$dif = $requested->diff($now);
-			$mil = ($dif->d * 86400 + $dif->h * 3600 + $dif->i * 60 + $dif->s) * 1000 + $dif->f;
+			$mil = ($dif->d * 86400 + $dif->h * 3600 + $dif->i * 60 + $dif->s) * 1000;
 			if ($mil > $this->expires) {
 				$this->cstate = 0;
 				$this->expired = true;
@@ -103,7 +103,7 @@ class User {
 		$con = new DBConnection();
 		if ($con->hasError())
 			return $con->getError();
-		$this->data = $con->query('SELECT password, id, state, first_name, last_name FROM users WHERE username=' . $con->quote($this->username));
+		$this->data = $con->query('SELECT password, id, state, first_name, last_name FROM users WHERE email=' . $con->quote($this->username));
 		if ($con->hasError())
 			return $con->getError();
 		if ($con->rowCount() != 1)
