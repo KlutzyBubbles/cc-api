@@ -1,10 +1,10 @@
 <?php
 
-define('SERVER', 'ec2-54-204-46-236.compute-1.amazonaws.com');
-define('PORT', '5432');
-define('DATABASE', 'df4r8fjpgm2fip');
-define('USERNAME', 'wrctwpfnyxnczz');
-define('PASSWORD', 'bfc1c84e8c8e80cda534681b4f715f2ab2e74f4da5ad673b67e9c679ce2112f3');
+define('SERVER', 'wm63be5w8m7gs25a.cbetxkdyhwsb.us-east-1.rds.amazonaws.com');
+define('PORT', '3306');
+define('DATABASE', 'yqp102tmvz3c07ug');
+define('USERNAME', 'zfc4ia70i1lxrhkc');
+define('PASSWORD', 'kl4hjnwvkp191v77');
 define('CHARSET', 'UTF8');
 
 /*

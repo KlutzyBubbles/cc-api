@@ -10,8 +10,8 @@ class DBConnection {
 
 	public function DBConnection($server = SERVER, $port = PORT, $database = DATABASE, $username = USERNAME, $password = PASSWORD, $charset = CHARSET) {
 		try {
-			$this->link = new PDO('pgsql:host=' . $server . ':' . $port . ';dbname=' . $database, $username, $password);
-			//$this->link = new PDO('mysql:host=' . $server . ':' . $port . ';dbname=' . $database . ';charset=' . $charset, $username, $password);
+			//$this->link = new PDO('pgsql:host=' . $server . ':' . $port . ';dbname=' . $database, $username, $password);
+			$this->link = new PDO('mysql:host=' . $server . ':' . $port . ';dbname=' . $database . ';charset=' . $charset, $username, $password);
 			$this->link->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
 			$this->link = $e;
