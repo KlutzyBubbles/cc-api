@@ -140,6 +140,7 @@ $app->post('/user/register', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 /**
@@ -189,6 +190,7 @@ $app->post('/user/get', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 /**
@@ -250,6 +252,7 @@ $app->post('/user/update', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 /**
@@ -310,6 +313,7 @@ $app->post('/user/password_reset', function(Request $request, Response $response
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 /**
@@ -392,6 +396,7 @@ $app->post('/tours/search', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 
@@ -469,6 +474,7 @@ $app->post('/trips/book', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 $app->post('/trips/me', function(Request $request, Response $response) {
@@ -549,6 +555,7 @@ $app->post('/trips/me', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 /**
@@ -611,6 +618,7 @@ $app->post('/trips/itinerary', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 /**
@@ -742,6 +750,7 @@ $app->post('/trips/review', function(Request $request, Response $response) {
 		$output['code'] = 3;
 	}
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 // Run app

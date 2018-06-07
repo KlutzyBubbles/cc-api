@@ -102,6 +102,7 @@ $app->post('/revoke', function(Request $request, Response $response) {
 	$body = $request->getParsedBody();
 	revoke($output, $body['user'], $body['token']);
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 $app->post('/request', function(Request $request, Response $response) {
@@ -109,6 +110,7 @@ $app->post('/request', function(Request $request, Response $response) {
 	$body = $request->getParsedBody();
 	request($output, $body['user'], $body['password']);
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 $app->post('/validate', function(Request $request, Response $response) {
@@ -116,6 +118,7 @@ $app->post('/validate', function(Request $request, Response $response) {
 	$body = $request->getParsedBody();
 	validate($output, $body['user'], $body['token']);
 	$response->getBody()->write(json_encode($output));
+	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
 });
 
 // Run app
