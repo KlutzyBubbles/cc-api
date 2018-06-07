@@ -147,6 +147,55 @@ $app->post('/user/register', function(Request $request, Response $response) {
  * 
  * user
  * token
+ * 
+ * ERROR CODES:
+ * 
+ * 4 - User doesn't exists
+ * 
+ */
+$app->post('/user/get', function(Request $request, Response $response) {
+	$body = $request->getParsedBody();
+	if (isset($body['user']) && isset($body['token'])) {
+		$o = [];
+		$o['valid'] = false;
+		validate($o, $body['user'], $body['token']);
+		if (!$o['valid']) {
+			$output['error'] = 'The token could not be validated';
+			$output['token']['error'] = $o['error'];
+			$output['token']['code'] = $o['code'];
+			$output['code'] = 2;
+		} else {
+			$con = new DBConnection();
+			if ($con->hasError()) {
+				$output['error'] = $con->getError()->getArray();
+				$output['code'] = 0;
+			} else {
+				$con->query("SELECT first_name, middle_initial, last_name, street_no, street_name, suburb, postcode, phone, state FROM users WHERE email=" . $con->quote($body['email']) . " LIMIT 1");
+				if ($con->hasError()) {
+					$output['db_error'] = $con->getError()->getArray();
+					$output['code'] = 0;
+				} else if ($con->rowCount() >= 1) {
+					$output['valid'] = true;
+					$output['data'] = $con->fetchAll();
+				} else {
+					$output['error'] = 'The user doesnt exist';
+					$output['code'] = 4;
+				}
+			}
+			$con->close();
+		}
+	} else {
+		$output['error'] = 'Invalid arguments provided, please see documentation';
+		$output['code'] = 3;
+	}
+	$response->getBody()->write(json_encode($output));
+});
+
+/**
+ * DATA:
+ * 
+ * user
+ * token
  * first_name*
  * middle_initial*
  * last_name*
