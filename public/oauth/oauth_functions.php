@@ -150,13 +150,23 @@ function request(&$output, $user, $password) {
 							$output['error'] = 'There was an issue executing the SELECT query';
 							$output['code'] = 0;
 						} else {
-							$r = $con->fetchCurrent();
 							if ($con->rowCount() == 1) {
+								$r = $con->fetchCurrent();
 								$con->query('UPDATE tokens SET cstate=4 WHERE cstate=1 AND token=' . $con->quote($r['token']));
 								if ($con->hasError()) {
 									$output['db_error'] = $con->getError()->getArray();
 									$output['error'] = 'There was an issue executing the UPDATE query';
 									$output['code'] = 0;
+								}
+							} else if ($con->rowCount() > 1) {
+								foreach ($con->fetchAll() as $r) {
+									$con->query('UPDATE tokens SET cstate=4 WHERE cstate=1 AND token=' . $con->quote($r['token']));
+									if ($con->hasError()) {
+										$output['db_error'] = $con->getError()->getArray();
+										$output['error'] = 'There was an issue executing the UPDATE query';
+										$output['code'] = 0;
+										break;
+									}
 								}
 							}
 							$q = "INSERT INTO tokens (`user`, `requested`, `cstate`, `created_by`, `token`, `expires`) VALUES (" . $u['id'] . ', NOW(3), 1, ' . $con->quote($_SERVER['REMOTE_ADDR']) . ', ' . $con->quote(bin2hex(random_bytes(32))) . ', 864000000)';
