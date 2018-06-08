@@ -172,6 +172,7 @@ $app->post('/user/get', function(Request $request, Response $response) {
 				$output['code'] = 0;
 			} else {
 				$con->query("SELECT first_name, middle_initial, last_name, street_no, street_name, suburb, postcode, phone, state FROM users WHERE LOWER(email)=" . $con->quote(strtolower($body['email'])) . " LIMIT 1");
+				$output['sql'] = "SELECT first_name, middle_initial, last_name, street_no, street_name, suburb, postcode, phone, state FROM users WHERE LOWER(email)=" . $con->quote(strtolower($body['email'])) . " LIMIT 1"
 				if ($con->hasError()) {
 					$output['db_error'] = $con->getError()->getArray();
 					$output['code'] = 0;
