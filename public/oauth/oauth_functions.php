@@ -47,7 +47,7 @@ function revoke(&$output, $user, $token) {
 					$output['code'] = 7;
 				} else {
 					$u = $con->fetchCurrent();
-					$con->query("SELECT requested, cstate, expires FROM tokens WHERE token=" . $con->quote($token) . " AND user=" . $con->quote($u['id']));
+					$con->query("SELECT requested, cstate, expires FROM tokens WHERE token=" . $con->quote($token) . " AND user=" . $con->quote($u['id']) . ' LIMIT 1');
 					if ($con->hasError()) {
 						$output['db_error'] = $con->getError()->getArray();
 						$output['error'] = 'There was an issue executing the SELECT query';
@@ -167,7 +167,7 @@ function request(&$output, $user, $password) {
 								$output['query'] = $q;
 								$output['code'] = 0;
 							} else {
-								$con->query('SELECT token, requested FROM tokens WHERE cstate=1 AND user=' . $con->quote($u['id']));
+								$con->query('SELECT token, requested FROM tokens WHERE cstate=1 AND user=' . $con->quote($u['id']) . ' LIMIT 1');
 								if ($con->hasError()) {
 									$output['db_error'] = $con->getError()->getArray();
 									$output['error'] = 'There was an issue executing the SELECT query';
