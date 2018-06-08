@@ -18,7 +18,7 @@ function getID($email, $token) {
 	if ($con->hasError()) {
 		return false;
 	} else {
-		$con->query("SELECT id FROM users WHERE email=" . $con->quote(strtolower($email)));
+		$con->query("SELECT id FROM users WHERE LOWER(email)=" . $con->quote(strtolower($email)));
 		if ($con->hasError()) {
 			return false;
 		} else if ($con->rowCount() !== 1) {
@@ -36,7 +36,7 @@ function revoke(&$output, $user, $token) {
 			$output['error'] = $con->getError()->getArray();
 			$output['code'] = 0;
 		} else {
-			$con->query("SELECT id, state FROM users WHERE email=" . $con->quote(strtolower($user)));
+			$con->query("SELECT id, state FROM users WHERE LOWER(email)=" . $con->quote(strtolower($user)));
 			if ($con->hasError()) {
 				$output['db_error'] = $con->getError()->getArray();
 				$output['error'] = 'The user doesnt exist';
@@ -132,7 +132,7 @@ function request(&$output, $user, $password) {
 			$output['error'] = $con->getError()->getArray();
 			$output['code'] = 0;
 		} else {
-			$con->query("SELECT id, password FROM users WHERE email=" . $con->quote(strtolower($user)));
+			$con->query("SELECT id, password FROM users WHERE LOWER(email)=" . $con->quote(strtolower($user)));
 			if ($con->hasError()) {
 				$output['db_error'] = $con->getError()->getArray();
 				$output['error'] = 'The user doesnt exist';

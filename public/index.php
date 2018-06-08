@@ -77,7 +77,7 @@ $app->post('/user/register', function(Request $request, Response $response) {
 			$output['error'] = $con->getError()->getArray();
 			$output['code'] = 0;
 		} else {
-			$con->query("SELECT id FROM users WHERE email=" . $con->quote($body['email']));
+			$con->query("SELECT id FROM users WHERE LOWER(email)=" . $con->quote(strtolower($body['email'])));
 			if ($con->hasError()) {
 				$output['db_error'] = $con->getError()->getArray();
 				$output['code'] = 0;
@@ -171,7 +171,7 @@ $app->post('/user/get', function(Request $request, Response $response) {
 				$output['error'] = $con->getError()->getArray();
 				$output['code'] = 0;
 			} else {
-				$con->query("SELECT first_name, middle_initial, last_name, street_no, street_name, suburb, postcode, phone, state FROM users WHERE email=" . $con->quote($body['email']) . " LIMIT 1");
+				$con->query("SELECT first_name, middle_initial, last_name, street_no, street_name, suburb, postcode, phone, state FROM users WHERE LOWER(email)=" . $con->quote(strtolower($body['email'])) . " LIMIT 1");
 				if ($con->hasError()) {
 					$output['db_error'] = $con->getError()->getArray();
 					$output['code'] = 0;
@@ -237,7 +237,7 @@ $app->post('/user/update', function(Request $request, Response $response) {
 						continue;
 					$data[$key] = $val;
 				}
-				$where = 'email=' . $con->quote($body['user']);
+				$where = 'LOWER(email)=' . $con->quote(strtolower($body['user']));
 				$con->update('users', $data, $where);
 				if ($con->hasError()) {
 					$output['db_error'] = $con->getError()->getArray();
@@ -286,7 +286,7 @@ $app->post('/user/password_reset', function(Request $request, Response $response
 			} else {
 				$data = [];
 				$data['password'] = password_hash($body['password'], PASSWORD_DEFAULT);
-				$where = 'email=' . $con->quote($body['user']);
+				$where = 'LOWER(email)=' . $con->quote(strtolower($body['user']));
 				$con->update('users', $data, $where);
 				if ($con->hasError()) {
 					$output['db_error'] = $con->getError()->getArray();
