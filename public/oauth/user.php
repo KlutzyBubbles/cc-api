@@ -65,6 +65,7 @@ class User {
 			$this->valid = false;
 			return true;
 		}
+		return false;
 	}
 	
 	public function hasExpired() {
@@ -103,7 +104,7 @@ class User {
 		$con = new DBConnection();
 		if ($con->hasError())
 			return $con->getError();
-		$this->data = $con->query('SELECT password, id, state, first_name, last_name FROM users WHERE email=' . $con->quote($this->username));
+		$this->data = $con->query('SELECT password, id, state, first_name, last_name FROM users WHERE LOWER(email)=' . $con->quote($this->username));
 		if ($con->hasError())
 			return $con->getError();
 		if ($con->rowCount() != 1)
