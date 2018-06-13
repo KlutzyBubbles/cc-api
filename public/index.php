@@ -332,69 +332,46 @@ $app->post('/user/password_reset', function(Request $request, Response $response
 $app->post('/tours/search', function(Request $request, Response $response) {
 	global $output;
 	$body = $request->getParsedBody();
-	if (isset($body['user']) && isset($body['token']) && isset($body['column']) && isset($body['term'])) {
-		$o = [];
-		$o['valid'] = false;
-		validate($o, $body['user'], $body['token']);
-		if (!$o['valid']) {
-			$output['error'] = 'The token could not be validated';
-			$output['token']['error'] = $o['error'];
-			$output['token']['code'] = $o['code'];
-			$output['code'] = 2;
+	if (isset($body['column']) && isset($body['term'])) {
+		$con = new DBConnection();
+		if ($con->hasError()) {
+			$output['error'] = $con->getError()->getArray();
+			$output['code'] = 0;
 		} else {
-			$con = new DBConnection();
+			$con->search('tours', $body['column'], $body['term']);
 			if ($con->hasError()) {
-				$output['error'] = $con->getError()->getArray();
+				$output['db_error'] = $con->getError()->getArray();
 				$output['code'] = 0;
+			} else if ($con->hasRows()) {
+				$output['valid'] = true;
+				$output['rows'] = $con->rowCount();
+				$output['data'] = $con->fetchAll();
 			} else {
-				$con->search('tours', $body['column'], $body['term']);
-				if ($con->hasError()) {
-					$output['db_error'] = $con->getError()->getArray();
-					$output['code'] = 0;
-				} else if ($con->hasRows()) {
-					$output['valid'] = true;
-					$output['rows'] = $con->rowCount();
-					$output['data'] = $con->fetchAll();
-				} else {
-					$output['valid'] = true;
-					$output['rows'] = 0;
-					$output['data'] = [];
-				}
-			}
-		}
-	} else if (isset($body['user']) && isset($body['token'])) {
-		$o = [];
-		$o['valid'] = false;
-		validate($o, $body['user'], $body['token']);
-		if (!$o['valid']) {
-			$output['error'] = 'The token could not be validated';
-			$output['token']['error'] = $o['error'];
-			$output['token']['code'] = $o['code'];
-			$output['code'] = 2;
-		} else {
-			$con = new DBConnection();
-			if ($con->hasError()) {
-				$output['error'] = $con->getError()->getArray();
-				$output['code'] = 0;
-			} else {
-				$con->query('SELECT * FROM tours');
-				if ($con->hasError()) {
-					$output['db_error'] = $con->getError()->getArray();
-					$output['code'] = 0;
-				} else if ($con->hasRows()) {
-					$output['valid'] = true;
-					$output['rows'] = $con->rowCount();
-					$output['data'] = $con->fetchAll();
-				} else {
-					$output['valid'] = true;
-					$output['rows'] = 0;
-					$output['data'] = [];
-				}
+				$output['valid'] = true;
+				$output['rows'] = 0;
+				$output['data'] = [];
 			}
 		}
 	} else {
-		$output['error'] = 'Invalid arguments provided, please see documentation';
-		$output['code'] = 3;
+		$con = new DBConnection();
+		if ($con->hasError()) {
+			$output['error'] = $con->getError()->getArray();
+			$output['code'] = 0;
+		} else {
+			$con->query('SELECT * FROM tours');
+			if ($con->hasError()) {
+				$output['db_error'] = $con->getError()->getArray();
+				$output['code'] = 0;
+			} else if ($con->hasRows()) {
+				$output['valid'] = true;
+				$output['rows'] = $con->rowCount();
+				$output['data'] = $con->fetchAll();
+			} else {
+				$output['valid'] = true;
+				$output['rows'] = 0;
+				$output['data'] = [];
+			}
+		}
 	}
 	$response->getBody()->write(json_encode($output));
 	return $response->withAddedHeader('Content-type', 'application/json')->withAddedHeader('Access-Control-Allow-Origin', '*');
