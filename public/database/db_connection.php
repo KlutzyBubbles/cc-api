@@ -118,6 +118,14 @@ class DBConnection {
 		return $this->query($q);
 	}
 	
+	public function searchRaw($table, $column, $term) {
+		if (!isset($table) || !isset($column) || !isset($term))
+			return false;
+		$q = 'SELECT * FROM ' . $table . ' WHERE ';
+		$q .= $column . ' = ' . $term;
+		return $this->query($q);
+	}
+	
 	public function searchArr($table, $terms) {
 		if (!isset($table) || !isset($terms) || !is_array($terms))
 			return false;
