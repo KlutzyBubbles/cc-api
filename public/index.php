@@ -346,6 +346,12 @@ $app->post('/tours/search', function(Request $request, Response $response) {
 				$output['valid'] = true;
 				$output['rows'] = $con->rowCount();
 				$output['data'] = $con->fetchAll();
+				foreach ($output['data'] as $row) {
+					$con->search('trips', 'tour_id', $row['id']);
+					if (!$con->hasError() && $con->hasRows()) {
+						$output['trips'][$row['id']] = $con->fetchAll();
+					}
+				}
 			} else {
 				$output['valid'] = true;
 				$output['rows'] = 0;
