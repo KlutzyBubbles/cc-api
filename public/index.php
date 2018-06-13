@@ -350,6 +350,9 @@ $app->post('/tours/search', function(Request $request, Response $response) {
 					$con->search('trips', 'tour_id', $row['id']);
 					if (!$con->hasError() && $con->hasRows()) {
 						$output['trips'][$row['id']] = $con->fetchAll();
+					} else {
+						$output['test'] = $con->getError();
+						$output['rows_trip'] = $con->rowCount();
 					}
 				}
 			} else {
