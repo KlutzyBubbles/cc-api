@@ -39,6 +39,7 @@ class User {
 	}
 	
 	public function updateExpiry() {
+		/*
 		$this->cstate = $this->getCState($this->token);
 		if ($this->cstate != '1') {
 			$this->cstate = '0';
@@ -59,6 +60,9 @@ class User {
 		if ($this->expired && $this->valid)
 			$con->query('UPDATE tokens SET cstate=0 WHERE cstate=1 AND token=' . $con->quote($this->token));
 		$con->close();
+		 * 
+		 */
+		$this->expired = false;
 	}
 	
 	public function hasError() {
