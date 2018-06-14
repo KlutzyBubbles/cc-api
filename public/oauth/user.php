@@ -48,6 +48,8 @@ class User {
 			$now = new DateTime();
 			$dif = $requested->diff($now);
 			//$mil = ($dif->d * 86400 + $dif->h * 3600 + $dif->i * 60 + $dif->s) * 1000;
+			var_dump($now->getTimestamp());
+			var_dump($requested->getTimestamp());
 			$mil = ($now->getTimestamp() - $requested->getTimestamp()) * 1000;
 			var_dump($mil);
 			var_dump($this->expires);
