@@ -39,8 +39,8 @@ class User {
 	}
 	
 	public function updateExpiry() {
-		if ($this->cstate != 1) {
-			$this->cstate = 0;
+		if ($this->cstate != '1') {
+			$this->cstate = '0';
 			$this->expired = true;
 		}
 		if (!$this->expired) {
