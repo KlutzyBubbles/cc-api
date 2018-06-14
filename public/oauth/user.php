@@ -39,6 +39,7 @@ class User {
 	}
 	
 	public function updateExpiry() {
+		$this->cstate = $this->getCState($this->token);
 		if ($this->cstate != '1') {
 			$this->cstate = '0';
 			$this->expired = true;
