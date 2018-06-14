@@ -47,7 +47,8 @@ class User {
 			$requested = new DateTime(date("Y-m-d H:i:s", strtotime($this->requested)));
 			$now = new DateTime();
 			$dif = $requested->diff($now);
-			$mil = ($dif->d * 86400 + $dif->h * 3600 + $dif->i * 60 + $dif->s) * 1000;
+			//$mil = ($dif->d * 86400 + $dif->h * 3600 + $dif->i * 60 + $dif->s) * 1000;
+			$mil = ($now->getTimestamp() - $requested->getTimestamp()) * 1000;
 			var_dump($mil);
 			var_dump($this->expires);
 			if ($mil > $this->expires) {
